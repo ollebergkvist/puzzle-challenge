@@ -2,7 +2,11 @@
 
 Puzzle home-challenge...
 
-## Run this app
+## Requirements
+
+Add a .env file in apps/api with necessary env variables (See .env.example)
+
+## Run this app locally
 
 Run the following command:
 
