@@ -4,7 +4,10 @@ Puzzle home-challenge...
 
 ## Requirements
 
-Add a .env file in apps/api with necessary env variables (See .env.example)
+1. In the "apps/api" directory, create a ".env" file.
+2. Copy the variables from ".env.example".
+3. Update the values in the ".env" file as needed.
+4. Save the changes.
 
 ## Run this app locally
 
