@@ -2,6 +2,9 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import { Prisma, PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export const createServer = () => {
   const app = express();
