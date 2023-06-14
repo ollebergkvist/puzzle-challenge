@@ -1,5 +1,8 @@
-import { render } from 'preact'
-import { App } from './app.tsx'
-import './index.css'
+// libs
+import { render } from "preact";
+import { App } from "./app.tsx";
 
-render(<App />, document.getElementById('app') as HTMLElement)
+// styles
+import "./styles/tailwind.css";
+
+render(<App />, document.getElementById("app") as HTMLElement);
