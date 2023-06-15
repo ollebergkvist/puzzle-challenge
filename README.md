@@ -4,6 +4,14 @@ Puzzle home-challenge...
 
 ## Requirements
 
+- In order to reset and seed the db, the mongodb user needs to have admin rights.
+- A default user is seeded with the following a credentials:
+
+```
+ email: admin@example.com
+ password: password
+```
+
 1. In the "apps/api" directory, create a ".env" file.
 2. Copy the variables from ".env.example".
 3. Update the values in the ".env" file as needed.
