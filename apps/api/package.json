@@ -6,9 +6,9 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "prisma:generate": "npx prisma generate",
+    "prisma:generate": "prisma generate",
     "prisma:reset": "ts-node --transpile-only prisma/reset.ts ",
-    "prisma:push": "npx prisma db push",
+    "prisma:push": "prisma db push",
     "prisma:seed": "ts-node --transpile-only prisma/seed.ts",
     "predev": "yarn prisma:reset && yarn prisma:generate && yarn prisma:push && yarn prisma:seed",
     "dev": "tsup src/index.ts --format cjs --watch --onSuccess \"node dist/index.js\"",
