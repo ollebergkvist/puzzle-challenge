@@ -8,10 +8,10 @@ import { validateBody } from "../middlewares";
 import { orderItemSchema } from "../schemas";
 
 // controllers
-import { CreateCart } from "../controllers";
+import { createCart } from "../controllers";
 
 const router = express.Router();
 
-router.post("/", validateBody(orderItemSchema), CreateCart);
+router.post("/", validateBody(orderItemSchema), createCart);
 
 export { router as CartRoute };

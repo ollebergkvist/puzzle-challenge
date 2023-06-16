@@ -1,7 +1,7 @@
 // libs
 import { PrismaClient } from "@prisma/client";
 
-export const GetAllProducts = async (req, res) => {
+export const getAllProducts = async (req, res) => {
   try {
     const prisma = new PrismaClient();
 

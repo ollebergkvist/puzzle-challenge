@@ -8,23 +8,26 @@ import { validateBody, validateToken } from "../middlewares";
 import { orderIdSchema, orderSchema, ratingSchema } from "../schemas";
 
 // controllers
-import { OrderRating, CancelOrder, CreateOrder } from "../controllers";
+import {
+  rateOrder,
+  cancelOrder,
+  createOrder,
+  updateOrder,
+  payOrder,
+} from "../controllers";
 
 const router = express.Router();
 
 router.use(validateToken);
 
-router.post("/orders/create", validateBody(orderSchema), CreateOrder);
-router.put("/orders/:orderId", validateBody(orderSchema), UpdateOrder);
-router.post(
-  "/orders/:orderId/ratings",
-  validateBody(ratingSchema),
-  OrderRating
-);
+router.post("/orders/create", validateBody(orderSchema), createOrder);
+router.put("/orders/:orderId", validateBody(orderSchema), updateOrder);
+router.post("/orders/:orderId/ratings", validateBody(ratingSchema), rateOrder);
 router.post(
   "/orders/:orderId/cancel",
   validateBody(orderIdSchema),
-  CancelOrder
+  cancelOrder
 );
+router.put("/orders/:orderId/pay", validateBody(orderIdSchema), payOrder);
 
 export { router as OrdersRoutes };

@@ -6,7 +6,7 @@ import { comparePasswords, generateToken } from "../utils";
 
 // utils
 
-export const LoginController = async (req, res) => {
+export const loginController = async (req, res) => {
   const { email, password } = req.body;
 
   const prisma = new PrismaClient();

@@ -8,10 +8,10 @@ import { validateBody } from "../middlewares";
 import { loginSchema } from "../schemas";
 
 // controllers
-import { LoginController } from "../controllers";
+import { loginController } from "../controllers";
 
 const router = express.Router();
 
-router.post("/", validateBody(loginSchema), LoginController);
+router.post("/", validateBody(loginSchema), loginController);
 
 export { router as LoginRoute };

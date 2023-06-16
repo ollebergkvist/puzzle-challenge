@@ -1,3 +1,3 @@
-export const HealthController = (req, res) => {
+export const healthController = (req, res) => {
   return res.json({ ok: true });
 };

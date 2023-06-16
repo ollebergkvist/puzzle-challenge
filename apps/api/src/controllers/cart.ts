@@ -1,7 +1,7 @@
 // libs
 import { PrismaClient } from "@prisma/client";
 
-export const CreateCart = async (req, res) => {
+export const createCart = async (req, res) => {
   const { productId, productName, productPrice, quantity } = req.body;
   const userId = req.user.id;
 

@@ -6,7 +6,7 @@ import { currencyConverter } from "../utils";
 
 const prisma = new PrismaClient();
 
-export const OrderRating = async (req, res) => {
+export const rateOrder = async (req, res) => {
   const { orderId } = req.params;
   const { rating } = req.body;
 
@@ -32,7 +32,7 @@ export const OrderRating = async (req, res) => {
   }
 };
 
-export const CreateOrder = async (req, res) => {
+export const createOrder = async (req, res) => {
   try {
     const { userId, orderDetails } = req.body;
 
@@ -69,7 +69,7 @@ export const CreateOrder = async (req, res) => {
   }
 };
 
-export const CancelOrder = async (req, res) => {
+export const cancelOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
     const userId = req.user.id;
@@ -106,7 +106,7 @@ export const CancelOrder = async (req, res) => {
   }
 };
 
-export const UpdateOrder = async (req, res) => {
+export const updateOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { itemsToAdd, itemsToRemove, currency } = req.body;
@@ -168,6 +168,23 @@ export const UpdateOrder = async (req, res) => {
     res.json(updatedOrder);
   } catch (error) {
     console.error("Error updating order:", error);
+
+    res.status(500).json({ error: "An unexpected error occurred" });
+  }
+};
+
+export const payOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: "COMPLETED" },
+    });
+
+    res.json({ message: "Order payment successful" });
+  } catch (error) {
+    console.error("Error processing order payment:", error);
 
     res.status(500).json({ error: "An unexpected error occurred" });
   }
