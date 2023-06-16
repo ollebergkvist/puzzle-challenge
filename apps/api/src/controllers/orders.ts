@@ -1,11 +1,14 @@
 // libs
 import { PrismaClient } from "@prisma/client";
 
+// utils
+import { currencyConverter } from "../utils";
+
+const prisma = new PrismaClient();
+
 export const OrderRating = async (req, res) => {
   const { orderId } = req.params;
   const { rating } = req.body;
-
-  const prisma = new PrismaClient();
 
   try {
     const order = await prisma.order.findUnique({
@@ -32,8 +35,6 @@ export const OrderRating = async (req, res) => {
 export const CreateOrder = async (req, res) => {
   try {
     const { userId, orderDetails } = req.body;
-
-    const prisma = new PrismaClient();
 
     const totalPrice = orderDetails.reduce(
       (acc, item) => acc + item.quantity * item.price,
@@ -70,7 +71,6 @@ export const CreateOrder = async (req, res) => {
 
 export const CancelOrder = async (req, res) => {
   try {
-    const prisma = new PrismaClient();
     const { orderId } = req.params;
     const userId = req.user.id;
 
@@ -101,6 +101,73 @@ export const CancelOrder = async (req, res) => {
     res.json({ message: "Order canceled successfully. Cart cleaned." });
   } catch (error) {
     console.error("Error canceling order:", error);
+
+    res.status(500).json({ error: "An unexpected error occurred" });
+  }
+};
+
+export const UpdateOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { itemsToAdd, itemsToRemove, currency } = req.body;
+
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!existingOrder) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    if (itemsToAdd && itemsToAdd.length > 0) {
+      const createItems = itemsToAdd.map((item) => ({
+        product: { connect: { id: item.productId } },
+        quantity: item.quantity,
+      }));
+
+      await prisma.orderItem.createMany({
+        data: createItems,
+        skipDuplicates: true,
+      });
+    }
+
+    if (itemsToRemove && itemsToRemove.length > 0) {
+      const itemIdsToRemove = itemsToRemove.map((item) => item.itemId);
+
+      await prisma.orderItem.deleteMany({
+        where: {
+          id: { in: itemIdsToRemove },
+          orderId: existingOrder.id,
+        },
+      });
+    }
+
+    if (currency) {
+      await prisma.order.update({
+        where: { id: existingOrder.id },
+        data: { currency },
+      });
+    }
+
+    if (currency && currency !== existingOrder.currency) {
+      existingOrder.items.forEach((item) => {
+        item.price = currencyConverter(
+          item.price,
+          existingOrder.currency,
+          currency
+        );
+      });
+    }
+
+    const updatedOrder = await prisma.order.findUnique({
+      where: { id: existingOrder.id },
+      include: { items: true },
+    });
+
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error("Error updating order:", error);
 
     res.status(500).json({ error: "An unexpected error occurred" });
   }
