@@ -15,6 +15,7 @@ const router = express.Router();
 router.use(validateToken);
 
 router.post("/orders/create", validateBody(orderSchema), CreateOrder);
+router.put("/orders/:orderId", validateBody(orderSchema), UpdateOrder);
 router.post(
   "/orders/:orderId/ratings",
   validateBody(ratingSchema),
