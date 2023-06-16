@@ -4,22 +4,30 @@ Puzzle home-challenge...
 
 ## Requirements
 
-- In order to reset and seed the db, the mongodb user needs to have admin rights.
-- A default user is seeded with the following a credentials:
+- MongoDB Atlas alternatively a local mongodb instance with a replica set configured (this is configured automatically with MongoDB Atlas).
+
+## Information
+
+- All db related scripts are configured to run "prevdev". So you don't have to execute them individually.
+- MongoDB user needs to have admin rights configured. Hence in case you use MongoDB Atlas, you'll need to set admin permissions
+  for your user via the UI as this is not set by default for new users via Atlas. If sufficient permissions are not set the reset db script won't be able to successfully run.
+- JWT auth and hashing of passwords with bcrypt has been implemented.
+- API will run on port 5001 by default, and the React app runs on port 5173 (unless configured differently).
+- A default user is seeded with the following credentials that you can use to login.
 
 ```
  email: admin@example.com
  password: password
 ```
 
-1. In the "apps/api" directory, create a ".env" file.
+## Run this app locally
+
+1. In the "apps/api" directory and "apps/frontend", create a ".env" file.
 2. Copy the variables from ".env.example".
 3. Update the values in the ".env" file as needed.
 4. Save the changes.
 
-## Run this app locally
-
-Run the following command:
+Run the following commands in the root of the project:
 
 ```
 yarn install
