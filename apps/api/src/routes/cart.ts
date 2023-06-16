@@ -2,13 +2,13 @@
 import express from "express";
 
 // middlewares
-import { validateBody } from "../middlewares/validate-body";
+import { validateBody } from "../middlewares";
 
 // schemas
 import { orderItemSchema } from "../schemas";
 
 // controllers
-import { CreateCart } from "../controllers/cart";
+import { CreateCart } from "../controllers";
 
 const router = express.Router();
 
