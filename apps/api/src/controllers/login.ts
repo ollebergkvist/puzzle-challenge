@@ -2,8 +2,7 @@
 import { PrismaClient } from "@prisma/client";
 
 // utils
-import { comparePasswords } from "../utils/compare-passwords";
-import generateToken from "../utils/generate-token";
+import { comparePasswords, generateToken } from "../utils";
 
 // utils
 
