@@ -22,7 +22,7 @@ router.use(validateToken);
 
 router.post("/orders/create", validateBody(orderSchema), createOrder);
 router.put("/orders/:orderId", validateBody(orderSchema), updateOrder);
-router.post("/orders/:orderId/ratings", validateBody(ratingSchema), rateOrder);
+router.post("/orders/:orderId/rate", validateBody(ratingSchema), rateOrder);
 router.post(
   "/orders/:orderId/cancel",
   validateBody(orderIdSchema),
