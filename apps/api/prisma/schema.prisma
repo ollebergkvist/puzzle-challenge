@@ -40,25 +40,29 @@ model CartItem {
 
 model Product {
   id        String      @id @default(cuid()) @map("_id")
-  name      String
+  title     String
+  image     String
   price     Float
+  rating    Float
+  category  String
   orders    Order[]
   CartItem  CartItem[]
   OrderItem OrderItem[]
 }
 
 model Order {
-  id        String      @id @default(cuid()) @map("_id")
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  user      User        @relation(fields: [userId], references: [id])
-  userId    String
-  items     OrderItem[]
-  status    OrderStatus
-  rating    Int?
-  currency  String?     @default("USD")
-  Product   Product?    @relation(fields: [productId], references: [id])
-  productId String?
+  id         String      @id @default(cuid()) @map("_id")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String
+  items      OrderItem[]
+  status     OrderStatus
+  rating     Int?
+  currency   String?     @default("USD")
+  totalPrice Float?      @default(0.0)
+  Product    Product?    @relation(fields: [productId], references: [id])
+  productId  String?
 }
 
 model OrderItem {
