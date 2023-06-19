@@ -7,6 +7,9 @@ import { useAddToCart } from "../../hooks";
 // utils
 import { priceFormatter } from "../../utils";
 
+// components
+import { Notification } from "..";
+
 // types
 import type { JSX } from "preact/jsx-runtime";
 import { ProductsProps } from "../../types";
@@ -14,10 +17,16 @@ import { ProductsProps } from "../../types";
 export const Products = ({ products }: ProductsProps): JSX.Element => {
   const { isAuthenticated, token } = useAuthContext();
 
-  const { handleOnClick } = useAddToCart(token);
+  const {
+    handleOnClick,
+    success: addItemToCartSuccess,
+    isLoading: isAddingToCartLoading,
+  } = useAddToCart(token);
 
   return (
     <section className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
+      {addItemToCartSuccess && <Notification message="Item added to cart!" />}
+
       {products.length >= 1 &&
         products.map((item) => (
           <div
@@ -52,13 +61,17 @@ export const Products = ({ products }: ProductsProps): JSX.Element => {
                   data-product-id={item.id}
                   className="ml-auto"
                   onClick={handleOnClick}
-                  disabled={isAuthenticated ? false : true}
+                  disabled={!isAuthenticated || isAddingToCartLoading}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
                     height="20"
-                    fill="currentColor"
+                    fill={
+                      !isAuthenticated || isAddingToCartLoading
+                        ? "lightgrey"
+                        : "currentColor"
+                    }
                     class="bi bi-bag-plus"
                     viewBox="0 0 16 16"
                   >
