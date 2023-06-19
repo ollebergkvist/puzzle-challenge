@@ -9,10 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "preact": "^10.13.2"
+    "dayjs": "^1.11.8",
+    "lodash": "^4.17.21",
+    "nanostores": "^0.9.2",
+    "preact": "^10.13.2",
+    "preact-router": "^4.1.1"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.5.0",
+    "@types/lodash": "^4.14.195",
+    "@types/react": "^18.2.12",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.24",
     "tailwindcss": "^3.3.2",
