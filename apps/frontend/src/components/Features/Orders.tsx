@@ -25,6 +25,7 @@ import { Filter, LoadingSpinner, Rating, Notification } from "..";
 
 // types
 import type { JSX } from "preact/jsx-runtime";
+import { useEffect } from "preact/hooks";
 
 export const Orders = (): JSX.Element => {
   const { token } = useAuthContext();
@@ -46,6 +47,7 @@ export const Orders = (): JSX.Element => {
     orders,
     isLoading: isLoadingOrders,
     error: getOrdersError,
+    fetchOrders: refetchOrders,
   } = useGetOrders(token, selectedStatus, selectedRatings, sortByPriceOrder);
 
   const {
@@ -61,6 +63,12 @@ export const Orders = (): JSX.Element => {
     fetchData: cancelOrder,
     success: cancelSuccess,
   } = useDynamicAPI(token, cancelOrderUrl, "PUT");
+
+  useEffect(() => {
+    if (paymentSuccess || cancelSuccess) {
+      refetchOrders();
+    }
+  }, [paymentSuccess, cancelSuccess]);
 
   const handleEditOrder = (event) => {
     const orderId = event.target.id;
