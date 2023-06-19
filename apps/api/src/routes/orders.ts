@@ -15,6 +15,8 @@ import {
   updateOrder,
   payOrder,
   getOrders,
+  getOrder,
+  deleteOrderItem,
 } from "../controllers";
 
 const router = express.Router();
@@ -22,8 +24,10 @@ const router = express.Router();
 router.use(validateToken);
 
 router.get("/", getOrders);
+router.get("/:id", getOrder);
+router.put("/:id", updateOrder);
+router.delete("/:id", deleteOrderItem);
 router.post("/create", createOrder);
-router.put("/edit", validateBody(orderSchema), updateOrder);
 router.put("/rate", validateBody(ratingSchema), rateOrder);
 router.put("/cancel", validateBody(orderIdSchema), cancelOrder);
 router.put("/pay", validateBody(orderIdSchema), payOrder);
