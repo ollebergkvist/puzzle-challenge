@@ -1,11 +1,6 @@
 // types
-import type React from "preact/compat";
 import type { JSX } from "preact/jsx-runtime";
-
-interface SearchProps {
-  value: string;
-  handleOnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
+import { SearchProps } from "../../types";
 
 export const Search = ({ value, handleOnChange }: SearchProps): JSX.Element => (
   <div className="w-full">

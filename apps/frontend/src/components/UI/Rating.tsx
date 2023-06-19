@@ -1,11 +1,7 @@
 import { useState } from "react";
 
 // types
-interface RatingProps {
-  orderId: string;
-  initialRating: number;
-  updateRating: (orderId: string, newRating: number) => void;
-}
+import { RatingProps } from "../../types";
 
 export const Rating = ({
   orderId,

@@ -3,14 +3,7 @@ import { useState } from "preact/hooks";
 
 // types
 import type { JSX } from "preact/jsx-runtime";
-
-interface FilterProps {
-  buttonTitle: string;
-  filterTitle: string;
-  values: string[];
-  selectedValues: string[];
-  handleFilterChange: (selectedValues: string[]) => void;
-}
+import { FilterProps } from "../../types";
 
 export const Filter = ({
   buttonTitle,
