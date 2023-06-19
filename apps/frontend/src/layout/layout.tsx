@@ -1,9 +1,5 @@
 // types
-import type { ComponentChildren } from "preact";
-
-interface LayoutProps {
-  children: ComponentChildren;
-}
+import { LayoutProps } from "../types";
 
 export const Layout = ({ children }: LayoutProps) => {
   return (
