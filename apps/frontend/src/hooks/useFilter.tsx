@@ -1,7 +1,7 @@
 // libs
 import { useState, useEffect } from "preact/hooks";
 
-export const useFilter = (filterType: string) => {
+export const useFilter = () => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
   const handleFilterChange = (selectedValues: string[]) => {
