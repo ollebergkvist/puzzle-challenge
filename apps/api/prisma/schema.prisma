@@ -63,6 +63,7 @@ model Order {
   totalPrice Float?      @default(0.0)
   Product    Product?    @relation(fields: [productId], references: [id])
   productId  String?
+  deleted    Boolean     @default(false)
 }
 
 model OrderItem {
