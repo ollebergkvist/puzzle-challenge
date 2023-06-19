@@ -1,5 +1,7 @@
 // libs
 import { render } from "preact";
+
+// app
 import { App } from "./app.tsx";
 
 // styles
