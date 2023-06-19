@@ -11,6 +11,10 @@ export type Products = {
   price: number;
 };
 
+export interface OrderDetailsPageProps {
+  orderId: string;
+}
+
 export interface ProductsProps {
   products: Products[];
   handleOnClick?: (event: React.TargetedEvent<HTMLButtonElement>) => void;
