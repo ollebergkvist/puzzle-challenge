@@ -1,16 +1,61 @@
 // libs
 import { PrismaClient } from "@prisma/client";
 
-export const createCart = async (req, res) => {
-  const { productId, productName, productPrice, quantity } = req.body;
-  const userId = req.user.id;
+// types
+import type { Request, Response } from "express";
 
-  const prisma = new PrismaClient();
+type User = {
+  userId: string;
+};
+
+interface CreateCartRequest extends Request {
+  user: User;
+}
+
+const prisma = new PrismaClient();
+
+export const createCart = async (req: CreateCartRequest, res: Response) => {
+  const { productId } = req.body;
+  const { userId } = req.user;
 
   try {
+    const product = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const existingCart = await prisma.cart.findFirst({
+      where: {
+        userId,
+      },
+    });
+
+    let cartId: string;
+
+    if (existingCart) {
+      cartId = existingCart.id;
+    } else {
+      const newCart = await prisma.cart.create({
+        data: {
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+        },
+      });
+
+      cartId = newCart.id;
+    }
+
     const existingCartItem = await prisma.cartItem.findFirst({
       where: {
-        cartId: userId,
+        cartId,
         productId,
       },
     });
@@ -21,7 +66,7 @@ export const createCart = async (req, res) => {
           id: existingCartItem.id,
         },
         data: {
-          quantity: existingCartItem.quantity + quantity,
+          quantity: existingCartItem.quantity + 1,
         },
       });
     } else {
@@ -29,16 +74,15 @@ export const createCart = async (req, res) => {
         data: {
           cart: {
             connect: {
-              id: userId,
+              id: cartId,
             },
           },
           product: {
-            create: {
-              name: productName,
-              price: productPrice,
+            connect: {
+              id: productId,
             },
           },
-          quantity,
+          quantity: 1,
         },
       });
     }
@@ -46,6 +90,31 @@ export const createCart = async (req, res) => {
     return res.status(200).json({ message: "Item added to cart" });
   } catch (error) {
     console.error("Error adding item to cart:", error);
+
+    return res.status(500).json({ error: "An unexpected error occurred" });
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+export const getCartItems = async (req: Request, res: Response) => {
+  const { userId } = req.user;
+
+  try {
+    const cartItems = await prisma.cartItem.findMany({
+      where: {
+        cart: {
+          userId,
+        },
+      },
+      include: {
+        product: true,
+      },
+    });
+
+    return res.status(200).json(cartItems);
+  } catch (error) {
+    console.error("Error retrieving cart items:", error);
 
     return res.status(500).json({ error: "An unexpected error occurred" });
   } finally {

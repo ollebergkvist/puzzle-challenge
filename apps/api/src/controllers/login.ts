@@ -4,9 +4,10 @@ import { PrismaClient } from "@prisma/client";
 // utils
 import { comparePasswords, generateToken } from "../utils";
 
-// utils
+// types
+import type { Request, Response } from "express";
 
-export const loginController = async (req, res) => {
+export const loginController = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const prisma = new PrismaClient();
@@ -22,7 +23,7 @@ export const loginController = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const passwordsMatch = comparePasswords(password, user.password);
+    const passwordsMatch = await comparePasswords(password, user.password);
 
     if (!passwordsMatch) {
       return res.status(401).json({ error: "Invalid password" });
@@ -33,6 +34,7 @@ export const loginController = async (req, res) => {
     return res.json({ token: token });
   } catch (error) {
     console.error("Error during login:", error);
+
     return res.status(500).json({ error: "An unexpected error occurred" });
   }
 };

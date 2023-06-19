@@ -4,11 +4,38 @@ import { PrismaClient } from "@prisma/client";
 // utils
 import { currencyConverter } from "../utils";
 
+// types
+import type { Request, Response } from "express";
+
 const prisma = new PrismaClient();
 
-export const rateOrder = async (req, res) => {
-  const { orderId } = req.params;
-  const { rating } = req.body;
+export const getOrders = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.user;
+
+    const orders = await prisma.order.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    res.json(orders);
+  } catch (error) {
+    console.error("Error retrieving user orders:", error);
+
+    res.status(500).json({ error: "An unexpected error occurred" });
+  }
+};
+
+export const rateOrder = async (req: Request, res: Response) => {
+  const { orderId, rating } = req.body;
 
   try {
     const order = await prisma.order.findUnique({
@@ -32,12 +59,42 @@ export const rateOrder = async (req, res) => {
   }
 };
 
-export const createOrder = async (req, res) => {
+export const createOrder = async (req: Request, res: Response) => {
   try {
-    const { userId, orderDetails } = req.body;
+    const { userId } = req.user;
 
-    const totalPrice = orderDetails.reduce(
-      (acc, item) => acc + item.quantity * item.price,
+    const cart = await prisma.cart.findFirst({
+      where: {
+        userId: userId,
+      },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (!cart) {
+      return res.status(404).json({ error: "Cart not found" });
+    }
+
+    const existingOrder = await prisma.order.findFirst({
+      where: {
+        userId: userId,
+        status: "ACTIVE",
+      },
+    });
+
+    if (existingOrder) {
+      return res
+        .status(400)
+        .json({ error: "User already has an active order" });
+    }
+
+    const totalPrice = cart.items.reduce(
+      (acc, item) => acc + item.quantity * item.product.price,
       0
     );
     const totalWithInterest = totalPrice * 1.15;
@@ -48,8 +105,8 @@ export const createOrder = async (req, res) => {
         updatedAt: new Date(),
         user: { connect: { id: userId } },
         items: {
-          create: orderDetails.map((item) => ({
-            product: { connect: { id: item.productId } },
+          create: cart.items.map((item) => ({
+            product: { connect: { id: item.product.id } },
             quantity: item.quantity,
           })),
         },
@@ -61,6 +118,15 @@ export const createOrder = async (req, res) => {
       },
     });
 
+    await prisma.cart.update({
+      where: {
+        id: cart.id,
+      },
+      data: {
+        status: "ARCHIVED",
+      },
+    });
+
     res.json(order);
   } catch (error) {
     console.error("Error during checkout:", error);
@@ -69,7 +135,7 @@ export const createOrder = async (req, res) => {
   }
 };
 
-export const cancelOrder = async (req, res) => {
+export const cancelOrder = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
     const userId = req.user.id;
@@ -106,7 +172,7 @@ export const cancelOrder = async (req, res) => {
   }
 };
 
-export const updateOrder = async (req, res) => {
+export const updateOrder = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
     const { itemsToAdd, itemsToRemove, currency } = req.body;
@@ -173,13 +239,25 @@ export const updateOrder = async (req, res) => {
   }
 };
 
-export const payOrder = async (req, res) => {
+export const payOrder = async (req: Request, res: Response) => {
   try {
-    const { orderId } = req.params;
+    const { orderId } = req.body;
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    if (order.status === "COMPLETED") {
+      return res.status(400).json({ error: "Order has already been paid" });
+    }
 
     await prisma.order.update({
       where: { id: orderId },
-      data: { status: "COMPLETED" },
+      data: { status: "COMPLETED", rating: 0 },
     });
 
     res.json({ message: "Order payment successful" });
