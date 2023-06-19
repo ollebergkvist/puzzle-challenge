@@ -1,56 +1,24 @@
-// libs
-import { useState } from "preact/hooks";
-import { route } from "preact-router";
-
 // context
 import { useAuthContext } from "../../context";
+
+// hooks:
+import { useLogin } from "../../hooks";
 
 // types
 import type { JSX } from "preact/jsx-runtime";
 
 export const Login = (): JSX.Element => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const { login } = useAuthContext();
 
-  const handleEmailChange = (
-    event: JSX.TargetedEvent<HTMLInputElement, Event>
-  ) => {
-    const { value } = event?.target as HTMLInputElement;
-
-    setEmail(value);
-  };
-
-  const handlePasswordChange = (
-    event: JSX.TargetedEvent<HTMLInputElement, Event>
-  ) => {
-    const { value } = event?.target as HTMLInputElement;
-
-    setPassword(value);
-  };
-
-  const handleSubmit = async (
-    event: JSX.TargetedEvent<HTMLFormElement, Event>
-  ) => {
-    event.preventDefault();
-
-    try {
-      setError("");
-      setLoading(true);
-
-      await login(email, password);
-
-      setLoading(false);
-
-      route("/", true);
-    } catch (err: any) {
-      setError(err.message);
-      setLoading(false);
-    }
-  };
+  const {
+    email,
+    password,
+    error,
+    loading,
+    handleEmailChange,
+    handlePasswordChange,
+    handleSubmit,
+  } = useLogin(login);
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">

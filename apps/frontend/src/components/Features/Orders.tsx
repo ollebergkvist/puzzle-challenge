@@ -1,23 +1,27 @@
-// libs
-import { useState } from "react";
-
 // context
 import { useAuthContext } from "../../context";
 
 // hooks
 import {
+  useSortByPrice,
   useGetOrders,
-  usePayOrder,
+  useDynamicAPI,
   useRating,
-  useCancelOrder,
   useFilter,
 } from "../../hooks";
 
 // utils
-import { formatDate, priceFormatter } from "../../utils";
+import {
+  cancelOrderUrl,
+  createPaymentUrl,
+  formatDate,
+  priceFormatter,
+  rating,
+  status,
+} from "../../utils";
 
 // components
-import { Filter, LoadingSpinner, Rating } from "..";
+import { Filter, LoadingSpinner, Rating, Notification } from "..";
 
 // types
 import type { JSX } from "preact/jsx-runtime";
@@ -25,7 +29,8 @@ import type { JSX } from "preact/jsx-runtime";
 export const Orders = (): JSX.Element => {
   const { token } = useAuthContext();
 
-  const [sortByPriceOrder, setSortByPriceOrder] = useState(null);
+  const { sortByPriceOrder, handleSortByPrice } = useSortByPrice();
+  const { updateRating } = useRating(token);
 
   const {
     selectedValues: selectedStatus,
@@ -37,34 +42,25 @@ export const Orders = (): JSX.Element => {
     handleFilterChange: handleRatingsFilterChange,
   } = useFilter();
 
-  const { orders, isLoading, error } = useGetOrders(
-    token,
-    selectedStatus,
-    selectedRatings,
-    sortByPriceOrder
-  );
+  const {
+    orders,
+    isLoading: isLoadingOrders,
+    error: getOrdersError,
+  } = useGetOrders(token, selectedStatus, selectedRatings, sortByPriceOrder);
 
   const {
     isLoading: isPaymentLoading,
-    error: isPaymentError,
-    payOrder,
-  } = usePayOrder(token);
-
-  const { updateRating } = useRating(token);
+    error: paymentError,
+    fetchData: payOrder,
+    success: paymentSuccess,
+  } = useDynamicAPI(token, createPaymentUrl, "PUT");
 
   const {
-    cancelOrder,
     isLoading: isCancellingOrder,
     error: cancelOrderError,
-  } = useCancelOrder(token);
-
-  // if (isLoading) {
-  //   return <LoadingSpinner />;
-  // }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+    fetchData: cancelOrder,
+    success: cancelSuccess,
+  } = useDynamicAPI(token, cancelOrderUrl, "PUT");
 
   const handleEditOrder = (event) => {
     const orderId = event.target.id;
@@ -72,32 +68,12 @@ export const Orders = (): JSX.Element => {
     // editOrder(orderId)
   };
 
-  const handleCancelOrder = (event) => {
-    const orderId = event.target.id;
-
-    cancelOrder(orderId);
-  };
-
-  const handlePayOrder = (event) => {
-    const orderId = event.target.id;
-
-    payOrder(orderId);
-  };
-
-  const handleSortByPrice = () => {
-    if (sortByPriceOrder === null || sortByPriceOrder === "asc") {
-      setSortByPriceOrder("desc");
-    } else {
-      setSortByPriceOrder("asc");
-    }
-  };
-
-  const status = ["ACTIVE", "COMPLETED"];
-
-  const rating = ["0", "1", "2", "3", "4", "5"];
-
   return (
     <div className="min-h-screen">
+      {paymentSuccess && <Notification message="Order succesully paid!" />}
+
+      {cancelSuccess && <Notification message="Order succesfully cancelled!" />}
+
       <h1 className="text-2xl font-bold mb-4">Orders</h1>
 
       <div className="flex space-x-3 mt-4">
@@ -133,7 +109,7 @@ export const Orders = (): JSX.Element => {
         </button>
       </div>
 
-      {isLoading ? (
+      {isLoadingOrders ? (
         <LoadingSpinner />
       ) : (
         <div>
@@ -244,7 +220,9 @@ export const Orders = (): JSX.Element => {
                         <button
                           id={order.id}
                           className="px-4 py-2 bg-red-500 text-white rounded ml-2"
-                          onClick={handleCancelOrder}
+                          onClick={(event) =>
+                            cancelOrder({ orderId: event.target.id })
+                          }
                           disabled={isCancellingOrder}
                         >
                           {isCancellingOrder ? "Cancelling..." : "Cancel"}
@@ -253,7 +231,9 @@ export const Orders = (): JSX.Element => {
                         <button
                           id={order.id}
                           className="px-4 py-2 bg-green-500 text-white rounded ml-2"
-                          onClick={handlePayOrder}
+                          onClick={(event) =>
+                            payOrder({ orderId: event.target.id })
+                          }
                           disabled={isPaymentLoading}
                         >
                           {isPaymentLoading ? "Paying..." : "Pay"}
@@ -261,9 +241,9 @@ export const Orders = (): JSX.Element => {
                       </div>
                     )}
 
-                    {isPaymentError && (
+                    {paymentError && (
                       <div className="mt-2 text-red-500">
-                        {isPaymentError.message}
+                        {paymentError.message}
                       </div>
                     )}
 
@@ -277,6 +257,8 @@ export const Orders = (): JSX.Element => {
               ))}
             </div>
           )}
+
+          {getOrdersError && <div>Error: {getOrdersError.message}</div>}
         </div>
       )}
     </div>

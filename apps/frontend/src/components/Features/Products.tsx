@@ -8,24 +8,12 @@ import { useAddToCart } from "../../hooks";
 import { priceFormatter } from "../../utils";
 
 // types
-import type React from "preact/compat";
 import type { JSX } from "preact/jsx-runtime";
-
-type Products = {
-  id: string;
-  image: string;
-  title: string;
-  category: string;
-  rating: number;
-  price: number;
-};
-interface ProductsProps {
-  products: Products[];
-  handleOnClick?: (event: React.TargetedEvent<HTMLButtonElement>) => void;
-}
+import { ProductsProps } from "../../types";
 
 export const Products = ({ products }: ProductsProps): JSX.Element => {
   const { isAuthenticated, token } = useAuthContext();
+
   const { handleOnClick } = useAddToCart(token);
 
   return (
