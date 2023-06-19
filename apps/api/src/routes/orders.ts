@@ -25,7 +25,7 @@ router.get("/", getOrders);
 router.post("/create", createOrder);
 router.put("/edit", validateBody(orderSchema), updateOrder);
 router.put("/rate", validateBody(ratingSchema), rateOrder);
-router.post("/cancel", validateBody(orderIdSchema), cancelOrder);
+router.put("/cancel", validateBody(orderIdSchema), cancelOrder);
 router.put("/pay", validateBody(orderIdSchema), payOrder);
 
 export { router as OrdersRoutes };
