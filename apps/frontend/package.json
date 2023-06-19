@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.15",
+    "@heroicons/react": "^2.0.18",
     "dayjs": "^1.11.8",
     "lodash": "^4.17.21",
     "nanostores": "^0.9.2",
