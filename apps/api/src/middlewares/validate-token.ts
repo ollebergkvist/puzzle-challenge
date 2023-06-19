@@ -1,7 +1,14 @@
 // libs
 import jwt from "jsonwebtoken";
 
-export const validateToken = (req, res, next) => {
+// types
+import type { Request, Response, NextFunction } from "express";
+
+export const validateToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const token = req.headers.authorization;
 
   if (!token) {
@@ -9,8 +16,12 @@ export const validateToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_TOKEN as string);
-    req.user = decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+
+    req.user = {
+      ...decoded,
+      userId: decoded.userId,
+    };
 
     next();
   } catch (error) {
