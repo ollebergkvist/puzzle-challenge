@@ -1,11 +1,9 @@
 // libs
 import { route } from "preact-router";
+import { useState } from "preact/hooks";
 
 // context
 import { useViewToggleContext } from "../context";
-
-// hooks
-import { useState } from "preact/hooks";
 
 export const useCheckout = (token: string) => {
   const { setActiveView } = useViewToggleContext();
