@@ -1,22 +1,41 @@
+// context
+import { useAuthContext } from "../../context";
+
+// hooks
+import { useAddToCart } from "../../hooks";
+
+// utils
+import { priceFormatter } from "../../utils";
+
 // types
 import type React from "preact/compat";
 import type { JSX } from "preact/jsx-runtime";
-import { priceFormatter } from "../../libs/price-formatter";
 
+type Products = {
+  id: string;
+  image: string;
+  title: string;
+  category: string;
+  rating: number;
+  price: number;
+};
 interface ProductsProps {
-  products: Record<string, string>[];
-  handleOnClick: (event: React.TargetedEvent<HTMLButtonElement>) => void;
+  products: Products[];
+  handleOnClick?: (event: React.TargetedEvent<HTMLButtonElement>) => void;
 }
 
-export const Products = ({
-  products,
-  handleOnClick,
-}: ProductsProps): JSX.Element => (
-  <div>
+export const Products = ({ products }: ProductsProps): JSX.Element => {
+  const { isAuthenticated, token } = useAuthContext();
+  const { handleOnClick } = useAddToCart(token);
+
+  return (
     <section className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
       {products.length >= 1 &&
         products.map((item) => (
-          <div className="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
+          <div
+            key={item.id}
+            className="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
+          >
             <img
               src={item.image}
               alt="Product"
@@ -33,7 +52,7 @@ export const Products = ({
               </p>
 
               <p className="text-gray-400 mr-3 mt-2 uppercase italic text-xs">
-                {item.rating.rate}
+                {item.rating}
               </p>
 
               <div className="flex items-center">
@@ -41,7 +60,12 @@ export const Products = ({
                   {`$${priceFormatter(item.price)} `}
                 </p>
 
-                <button className="ml-auto" onClick={handleOnClick}>
+                <button
+                  data-product-id={item.id}
+                  className="ml-auto"
+                  onClick={handleOnClick}
+                  disabled={isAuthenticated ? false : true}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -62,5 +86,5 @@ export const Products = ({
           </div>
         ))}
     </section>
-  </div>
-);
+  );
+};
