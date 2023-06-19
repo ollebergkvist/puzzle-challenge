@@ -58,6 +58,33 @@ export const getOrders = async (req: Request, res: Response) => {
   }
 };
 
+export const getOrder = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const order = await prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.error("Error getting order by ID:", error);
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const rateOrder = async (req: Request, res: Response) => {
   const { orderId, rating } = req.body;
 
@@ -108,6 +135,7 @@ export const createOrder = async (req: Request, res: Response) => {
       (acc, item) => acc + item.quantity * item.product.price,
       0
     );
+
     const totalWithInterest = totalPrice * 1.15;
 
     const order = await prisma.order.create({
@@ -182,8 +210,8 @@ export const cancelOrder = async (req: Request, res: Response) => {
 
 export const updateOrder = async (req: Request, res: Response) => {
   try {
-    const { orderId } = req.params;
-    const { itemsToAdd, itemsToRemove, currency } = req.body;
+    const { id: orderId } = req.params;
+    const { itemsToAdd, currency } = req.body;
 
     const existingOrder = await prisma.order.findUnique({
       where: { id: orderId },
@@ -195,42 +223,28 @@ export const updateOrder = async (req: Request, res: Response) => {
     }
 
     if (itemsToAdd && itemsToAdd.length > 0) {
-      const createItems = itemsToAdd.map((item) => ({
-        product: { connect: { id: item.productId } },
-        quantity: item.quantity,
-      }));
+      for (const item of itemsToAdd) {
+        const existingOrderItem = await prisma.orderItem.findUnique({
+          where: { id: item.orderItemId },
+        });
 
-      await prisma.orderItem.createMany({
-        data: createItems,
-        skipDuplicates: true,
-      });
-    }
-
-    if (itemsToRemove && itemsToRemove.length > 0) {
-      const itemIdsToRemove = itemsToRemove.map((item) => item.itemId);
-
-      await prisma.orderItem.deleteMany({
-        where: {
-          id: { in: itemIdsToRemove },
-          orderId: existingOrder.id,
-        },
-      });
+        if (existingOrderItem) {
+          await prisma.orderItem.update({
+            where: { id: existingOrderItem.id },
+            data: {
+              quantity: parseInt(item.quantity),
+            },
+          });
+        } else {
+          console.error(`OrderItem with id ${item.orderItemId} not found.`);
+        }
+      }
     }
 
     if (currency) {
       await prisma.order.update({
         where: { id: existingOrder.id },
         data: { currency },
-      });
-    }
-
-    if (currency && currency !== existingOrder.currency) {
-      existingOrder.items.forEach((item) => {
-        item.price = currencyConverter(
-          item.price,
-          existingOrder.currency,
-          currency
-        );
       });
     }
 
@@ -242,6 +256,45 @@ export const updateOrder = async (req: Request, res: Response) => {
     res.json(updatedOrder);
   } catch (error) {
     console.error("Error updating order:", error);
+
+    res.status(500).json({ error: "An unexpected error occurred" });
+  }
+};
+
+export const deleteOrderItem = async (req: Request, res: Response) => {
+  try {
+    const { id: orderId } = req.params;
+    const { orderItemId } = req.body;
+
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!existingOrder) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    const remainingItems = existingOrder.items.filter(
+      (item) => item.id !== orderItemId
+    );
+
+    if (remainingItems.length === 0) {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { deleted: true },
+      });
+
+      return res.status(204).end();
+    } else {
+      await prisma.orderItem.delete({
+        where: { id: orderItemId },
+      });
+
+      return res.status(204).end();
+    }
+  } catch (error) {
+    console.error("Error deleting order item:", error);
 
     res.status(500).json({ error: "An unexpected error occurred" });
   }
