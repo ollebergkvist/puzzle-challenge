@@ -9,7 +9,7 @@ import { AuthProvider, ViewToggleProvider } from "./context";
 import { Layout } from "./layout";
 
 // pages
-import { CartPage, CheckoutPage, HomePage, LoginPage } from "./pages";
+import { CartPage, HomePage, LoginPage } from "./pages";
 
 // components
 import { Navbar } from "./components";
@@ -28,8 +28,6 @@ export function App() {
               <AsyncRoute path="/login" component={LoginPage} />
 
               <AsyncRoute exact path="/cart" component={CartPage} />
-
-              <AsyncRoute path="/checkout" component={CheckoutPage} />
             </Router>
           </ViewToggleProvider>
         </Layout>
