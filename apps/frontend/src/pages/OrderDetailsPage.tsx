@@ -10,7 +10,7 @@ import { Cart } from "../components";
 // types
 import type { JSX } from "preact/jsx-runtime";
 
-export const SingleOrderPage = (): JSX.Element => {
+export const OrderDetailsPage = (): JSX.Element => {
   const { isAuthenticated } = useAuthContext();
 
   return (
