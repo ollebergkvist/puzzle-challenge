@@ -12,10 +12,12 @@ const prisma = new PrismaClient();
 export const getOrders = async (req: Request, res: Response) => {
   try {
     const { userId } = req.user;
+    const { status, rating, sortBy } = req.query;
 
-    const orders = await prisma.order.findMany({
+    let ordersQuery = {
       where: {
         userId: userId,
+        deleted: false,
       },
       include: {
         items: {
@@ -24,12 +26,34 @@ export const getOrders = async (req: Request, res: Response) => {
           },
         },
       },
-    });
+      orderBy: {},
+    };
 
-    res.json(orders);
+    if (status) {
+      const statusArray = (status as string).split(",");
+      ordersQuery.where.status = {
+        in: statusArray,
+      };
+    }
+
+    if (sortBy === "asc" || sortBy === "desc") {
+      ordersQuery.orderBy = {
+        totalPrice: sortBy,
+      };
+    }
+
+    const orders = await prisma.order.findMany(ordersQuery);
+
+    if (rating) {
+      const filteredOrders = orders.filter(
+        (order) => order.rating === parseInt(rating as string)
+      );
+      res.json(filteredOrders);
+    } else {
+      res.json(orders);
+    }
   } catch (error) {
     console.error("Error retrieving user orders:", error);
-
     res.status(500).json({ error: "An unexpected error occurred" });
   }
 };
@@ -80,19 +104,6 @@ export const createOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Cart not found" });
     }
 
-    const existingOrder = await prisma.order.findFirst({
-      where: {
-        userId: userId,
-        status: "ACTIVE",
-      },
-    });
-
-    if (existingOrder) {
-      return res
-        .status(400)
-        .json({ error: "User already has an active order" });
-    }
-
     const totalPrice = cart.items.reduce(
       (acc, item) => acc + item.quantity * item.product.price,
       0
@@ -118,12 +129,9 @@ export const createOrder = async (req: Request, res: Response) => {
       },
     });
 
-    await prisma.cart.update({
+    await prisma.cartItem.deleteMany({
       where: {
-        id: cart.id,
-      },
-      data: {
-        status: "ARCHIVED",
+        cartId: cart.id,
       },
     });
 
@@ -137,8 +145,8 @@ export const createOrder = async (req: Request, res: Response) => {
 
 export const cancelOrder = async (req: Request, res: Response) => {
   try {
-    const { orderId } = req.params;
-    const userId = req.user.id;
+    const { orderId } = req.body;
+    const { userId } = req.user;
 
     const order = await prisma.order.findFirst({
       where: {
@@ -155,16 +163,16 @@ export const cancelOrder = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Cannot cancel a completed order" });
     }
 
-    await prisma.order.delete({
+    const canceledOrder = await prisma.order.update({
       where: {
         id: orderId,
       },
-      include: {
-        items: true,
+      data: {
+        deleted: true,
       },
     });
 
-    res.json({ message: "Order canceled successfully. Cart cleaned." });
+    res.json({ message: "Order canceled successfully." });
   } catch (error) {
     console.error("Error canceling order:", error);
 
