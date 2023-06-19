@@ -1,5 +1,6 @@
 // libs
 import { Router, Route } from "preact-router";
+import AsyncRoute from "preact-async-route";
 
 // context
 import { AuthProvider, ViewToggleProvider } from "./context";
@@ -22,13 +23,13 @@ export function App() {
         <Layout>
           <ViewToggleProvider>
             <Router>
-              <Route exact path="/" component={HomePage} />
+              <Route path="/" component={HomePage} />
 
-              <Route path="/login" component={LoginPage} />
+              <AsyncRoute path="/login" component={LoginPage} />
 
-              <Route exact path="/cart" component={CartPage} />
+              <AsyncRoute exact path="/cart" component={CartPage} />
 
-              <Route path="/checkout" component={CheckoutPage} />
+              <AsyncRoute path="/checkout" component={CheckoutPage} />
             </Router>
           </ViewToggleProvider>
         </Layout>
