@@ -36,12 +36,12 @@ export const HomePage = (): JSX.Element => {
   const {
     selectedValues: selectedTitles,
     handleFilterChange: handleTitleFilterChange,
-  } = useFilter("title");
+  } = useFilter();
 
   const {
     selectedValues: selectedCategories,
     handleFilterChange: handleCategoryFilterChange,
-  } = useFilter("category");
+  } = useFilter();
 
   const { filteredProducts, isFiltering } = useFilterClick(
     selectedTitles,
@@ -57,7 +57,6 @@ export const HomePage = (): JSX.Element => {
     searchError,
   } = useDebouncedSearch(`${import.meta.env.VITE_API_URL}/products`);
 
-  // handle item
   const handleAddItemToCart = (event) => {
     const { value } = event.target;
   };
