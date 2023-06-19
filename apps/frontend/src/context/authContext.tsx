@@ -4,17 +4,7 @@ import { route } from "preact-router";
 import { useContext, useState } from "preact/hooks";
 
 // types
-interface AuthContextProps {
-  isAuthenticated: boolean;
-  user: any;
-  token: string;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
+import { AuthContextProps, AuthProviderProps } from "../types";
 
 const AuthContext = createContext<AuthContextProps | null>(null);
 
