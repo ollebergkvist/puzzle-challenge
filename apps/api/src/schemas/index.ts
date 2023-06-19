@@ -11,6 +11,7 @@ export const loginSchema = z.object({
 export type RatingSchemaType = z.TypeOf<typeof ratingSchema>;
 
 export const ratingSchema = z.object({
+  orderId: z.string().cuid(),
   rating: z.number().int().min(0).max(5),
 });
 
@@ -18,15 +19,12 @@ export type OrderItemType = z.TypeOf<typeof orderItemSchema>;
 
 export const orderItemSchema = z.object({
   productId: z.string(),
-  productName: z.string(),
-  productPrice: z.number().positive(),
-  quantity: z.number().int().positive(),
 });
 
 export type OrderSchemaType = z.TypeOf<typeof orderSchema>;
 
 export const orderSchema = z.object({
-  userId: z.string(),
+  userId: z.string().cuid(),
   orderDetails: z.array(
     z.object({
       productId: z.string(),
@@ -37,4 +35,21 @@ export const orderSchema = z.object({
 
 export type OrderIdSchemaType = z.TypeOf<typeof orderIdSchema>;
 
-export const orderIdSchema = z.string();
+export const orderIdSchema = z.object({
+  orderId: z.string().cuid(),
+});
+
+export type FilterSchemaType = z.TypeOf<typeof filterSchema>;
+
+export const filterSchema = z.object({
+  itemName: z.string().optional(),
+  categoryName: z.string().optional(),
+});
+
+export type searchSchemaType = z.TypeOf<typeof searchSchemaSchema>;
+
+export const searchSchema = z.object({
+  itemName: z.string().optional(),
+  categoryName: z.string().optional(),
+  price: z.number().min(0).optional(),
+});
