@@ -1,3 +1,6 @@
+// libs
+import { useEffect } from "preact/hooks";
+
 // context
 import { useAuthContext } from "../../context";
 
@@ -8,6 +11,7 @@ import {
   useDynamicAPI,
   useRating,
   useFilter,
+  useOrderRedirect,
 } from "../../hooks";
 
 // utils
@@ -25,7 +29,6 @@ import { Filter, LoadingSpinner, Rating, Notification } from "..";
 
 // types
 import type { JSX } from "preact/jsx-runtime";
-import { useEffect } from "preact/hooks";
 
 export const Orders = (): JSX.Element => {
   const { token } = useAuthContext();
@@ -64,17 +67,13 @@ export const Orders = (): JSX.Element => {
     success: cancelSuccess,
   } = useDynamicAPI(token, cancelOrderUrl, "PUT");
 
+  const redirectToOrder = useOrderRedirect();
+
   useEffect(() => {
     if (paymentSuccess || cancelSuccess) {
       refetchOrders();
     }
   }, [paymentSuccess, cancelSuccess]);
-
-  const handleEditOrder = (event) => {
-    const orderId = event.target.id;
-
-    // editOrder(orderId)
-  };
 
   return (
     <div className="min-h-screen">
@@ -220,7 +219,9 @@ export const Orders = (): JSX.Element => {
                         <button
                           id={order.id}
                           className="px-4 py-2 bg-blue-500 text-white rounded"
-                          onClick={handleEditOrder}
+                          onClick={(event) => {
+                            redirectToOrder(event.target.id);
+                          }}
                         >
                           Edit
                         </button>
@@ -228,9 +229,9 @@ export const Orders = (): JSX.Element => {
                         <button
                           id={order.id}
                           className="px-4 py-2 bg-red-500 text-white rounded ml-2"
-                          onClick={(event) =>
-                            cancelOrder({ orderId: event.target.id })
-                          }
+                          onClick={(event) => {
+                            cancelOrder({ orderId: event.target.id });
+                          }}
                           disabled={isCancellingOrder}
                         >
                           {isCancellingOrder ? "Cancelling..." : "Cancel"}
@@ -239,9 +240,9 @@ export const Orders = (): JSX.Element => {
                         <button
                           id={order.id}
                           className="px-4 py-2 bg-green-500 text-white rounded ml-2"
-                          onClick={(event) =>
-                            payOrder({ orderId: event.target.id })
-                          }
+                          onClick={(event) => {
+                            payOrder({ orderId: event.target.id });
+                          }}
                           disabled={isPaymentLoading}
                         >
                           {isPaymentLoading ? "Paying..." : "Pay"}
