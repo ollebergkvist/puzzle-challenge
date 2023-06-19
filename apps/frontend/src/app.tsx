@@ -28,6 +28,8 @@ export function App() {
               <AsyncRoute path="/login" component={LoginPage} />
 
               <AsyncRoute exact path="/cart" component={CartPage} />
+
+              <AsyncRoute path="/orders/:orderId" component={OrderDetails} />
             </Router>
           </ViewToggleProvider>
         </Layout>
