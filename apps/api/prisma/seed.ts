@@ -37,11 +37,11 @@ async function main() {
     // Seed products
     if (products.length > 0) {
       const mappedProducts = products.map((product: any) => ({
-        title: product.title,
+        title: product.title.trim(),
         price: parseFloat(product.price),
-        image: product.image,
+        image: product.image.trim(),
         rating: parseFloat(product.rating.rate),
-        category: product.category,
+        category: product.category.trim(),
       }));
 
       try {
