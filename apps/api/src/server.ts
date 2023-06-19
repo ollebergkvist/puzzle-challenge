@@ -16,10 +16,8 @@ import {
 export const createServer = () => {
   const app = express();
 
-  // global middlewares
   registerGlobalMiddlewares(app);
 
-  // routes
   app.use("/api/health", HealthRoute);
   app.use("/api/login", LoginRoute);
   app.use("/api/orders", OrdersRoutes);
