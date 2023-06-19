@@ -8,6 +8,7 @@ export const useDynamicAPI = (token: string, url: string, method = "GET") => {
 
   const fetchData = async (requestData = null) => {
     setIsLoading(true);
+    setSuccess(false);
     setError(null);
 
     try {
