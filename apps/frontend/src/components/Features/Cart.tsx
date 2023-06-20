@@ -68,6 +68,10 @@ export const Cart = () => {
                               </h2>
                             </div>
 
+                            <div>
+                              <p>Quantity: {item.quantity}</p>
+                            </div>
+
                             <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
                               <div className="flex items-center space-x-4">
                                 <p className="text-sm">
