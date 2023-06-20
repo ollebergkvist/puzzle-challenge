@@ -1,9 +1,3 @@
-// libs
-import { route } from "preact-router";
-
-// context
-import { useAuthContext } from "../context";
-
 // components
 import { Cart } from "../components";
 
@@ -11,17 +5,9 @@ import { Cart } from "../components";
 import type { JSX } from "preact/jsx-runtime";
 
 export const CartPage = (): JSX.Element => {
-  const { isAuthenticated } = useAuthContext();
-
   return (
     <>
-      {isAuthenticated ? (
-        <Cart />
-      ) : (
-        (() => {
-          route("/login");
-        })()
-      )}
+      <Cart />
     </>
   );
 };

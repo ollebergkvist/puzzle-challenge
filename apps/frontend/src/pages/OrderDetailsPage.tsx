@@ -1,9 +1,3 @@
-// libs
-import { route } from "preact-router";
-
-// context
-import { useAuthContext } from "../context";
-
 // components
 import { OrderDetails } from "../components";
 
@@ -14,19 +8,5 @@ import { OrderDetailsPageProps } from "../types";
 export const OrderDetailsPage = ({
   orderId,
 }: OrderDetailsPageProps): JSX.Element => {
-  const { isAuthenticated } = useAuthContext();
-
-  return (
-    <>
-      {isAuthenticated ? (
-        <>
-          <OrderDetails orderId={orderId} />
-        </>
-      ) : (
-        (() => {
-          route("/login");
-        })()
-      )}
-    </>
-  );
+  return <OrderDetails orderId={orderId} />;
 };

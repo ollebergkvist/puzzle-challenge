@@ -1,5 +1,6 @@
 // libs
 import { route } from "preact-router";
+import { useEffect } from "preact/hooks";
 
 // types
 import type { JSX } from "preact/jsx-runtime";
@@ -60,6 +61,12 @@ export const HomePage = (): JSX.Element => {
   const handleAddItemToCart = (event) => {
     const { value } = event.target;
   };
+
+  useEffect(() => {
+    if (activeView === "My Orders" && !isAuthenticated) {
+      route("/login");
+    }
+  }, [activeView, isAuthenticated]);
 
   return (
     <div className="">
@@ -154,17 +161,7 @@ export const HomePage = (): JSX.Element => {
           </div>
         )}
 
-        {activeView === "My Orders" && (
-          <>
-            {isAuthenticated ? (
-              <Orders />
-            ) : (
-              (() => {
-                route("/login");
-              })()
-            )}
-          </>
-        )}
+        {activeView === "My Orders" && isAuthenticated && <Orders />}
       </main>
     </div>
   );

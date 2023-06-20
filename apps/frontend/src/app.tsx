@@ -13,29 +13,30 @@ import { CartPage, HomePage, LoginPage, OrderDetailsPage } from "./pages";
 
 // components
 import { Navbar } from "./components";
+import { ProtectedRoute } from "./protected-route";
 
 export function App() {
   return (
     <div>
       <AuthProvider>
-        <Navbar />
+        <ViewToggleProvider>
+          <Navbar />
 
-        <Layout>
-          <ViewToggleProvider>
+          <Layout>
             <Router>
               <Route path="/" component={HomePage} />
 
               <AsyncRoute path="/login" component={LoginPage} />
 
-              <AsyncRoute exact path="/cart" component={CartPage} />
+              <ProtectedRoute path="/cart" component={CartPage} />
 
-              <AsyncRoute
+              <ProtectedRoute
                 path="/orders/:orderId"
                 component={OrderDetailsPage}
               />
             </Router>
-          </ViewToggleProvider>
-        </Layout>
+          </Layout>
+        </ViewToggleProvider>
       </AuthProvider>
     </div>
   );
