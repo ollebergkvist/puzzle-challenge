@@ -16,7 +16,6 @@ import {
   useFilter,
   useFetchData,
   useDebouncedSearch,
-  useFilterClick,
 } from "../hooks";
 
 // components
@@ -27,7 +26,6 @@ import {
   Products,
   Search,
 } from "../components";
-import { useEffect, useMemo } from "preact/hooks";
 
 export const HomePage = (): JSX.Element => {
   const { isAuthenticated } = useAuthContext();
@@ -53,11 +51,8 @@ export const HomePage = (): JSX.Element => {
 
   const { products, unfilteredProducts, loading } = useFetchData(
     selectedTitles,
-    selectedCategories,
-    searchQuery
+    selectedCategories
   );
-
-  console.log("🚀 ~ file: HomePage.tsx:59 ~ HomePage ~ products,:", products);
 
   const categories = useFilterOptions(unfilteredProducts, "category");
   const titles = useFilterOptions(unfilteredProducts, "title");
