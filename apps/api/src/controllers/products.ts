@@ -8,7 +8,30 @@ const prisma = new PrismaClient();
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const products = await prisma.product.findMany();
+    const { itemNames, categoryNames } = req.body;
+
+    let whereClause = {};
+
+    if (itemNames && itemNames.length > 0) {
+      whereClause = {
+        title: {
+          in: itemNames,
+        },
+      };
+    }
+
+    if (categoryNames && categoryNames.length > 0) {
+      whereClause = {
+        ...whereClause,
+        category: {
+          in: categoryNames,
+        },
+      };
+    }
+
+    const products = await prisma.product.findMany({
+      where: whereClause,
+    });
 
     res.json(products);
   } catch (error) {
