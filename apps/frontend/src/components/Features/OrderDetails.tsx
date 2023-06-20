@@ -249,9 +249,7 @@ export const OrderDetails = ({
                                       </td>
 
                                       <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
-                                        {priceFormatter(
-                                          item.product.price * 0.15
-                                        )}
+                                        {priceFormatter(price * 0.15)}
                                       </td>
 
                                       <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
