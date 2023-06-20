@@ -4,7 +4,7 @@ import { useEffect, useState } from "preact/hooks";
 // utils
 import { getProductsUrl } from "../utils";
 
-export const useFetchData = (titles: any, categories: any, search: string) => {
+export const useFetchData = (titles: any, categories: any) => {
   const [products, setProducts] = useState([]);
   const [unfilteredProducts, setUnfilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,22 +15,10 @@ export const useFetchData = (titles: any, categories: any, search: string) => {
     setError(null);
 
     try {
-      // if (titles || categories || search) {
-      //   url += "?";
-      //   if (titles) url += `titles=${titles}&`;
-      //   if (categories) url += `categories=${categories}&`;
-      //   if (search) url += `search=${search}`;
-      // }
-
       const requestBody = {
         itemNames: titles || [],
         categoryNames: categories || [],
-        search: search || [],
       };
-      console.log(
-        "🚀 ~ file: useFetchData.tsx:29 ~ fetchData ~ requestBody:",
-        requestBody
-      );
 
       const response = await fetch(getProductsUrl, {
         method: "POST",
@@ -45,9 +33,8 @@ export const useFetchData = (titles: any, categories: any, search: string) => {
       }
 
       const data = await response.json();
-      console.log("🚀 ~ file: useFetchData.tsx:48 ~ fetchData ~ data:", data);
 
-      if (!titles.length && !categories.length && !search) {
+      if (!titles.length && !categories.length) {
         console.log("1");
         setUnfilteredProducts(data);
         setProducts(data);
@@ -67,7 +54,7 @@ export const useFetchData = (titles: any, categories: any, search: string) => {
 
   useEffect(() => {
     fetchData();
-  }, [titles, categories, search]);
+  }, [titles, categories]);
 
   useEffect(() => {
     fetchData();
