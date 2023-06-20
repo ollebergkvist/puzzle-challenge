@@ -22,6 +22,7 @@ import {
   priceFormatter,
   rating,
   status,
+  currencyConverter,
 } from "../../utils";
 
 // components
@@ -199,6 +200,23 @@ export const Orders = (): JSX.Element => {
 
                         <tbody className="divide-y divide-gray-200 bg-white">
                           {order.items.map((item) => {
+                            const isOrderCurrencyUSD = order.currency === "USD";
+
+                            const price = isOrderCurrencyUSD
+                              ? item.product.price
+                              : currencyConverter(
+                                  item.product.price,
+                                  "USD",
+                                  order.currency
+                                );
+                            const total = isOrderCurrencyUSD
+                              ? item.quantity * item.product.price * 1.15
+                              : currencyConverter(
+                                  item.quantity * item.product.price * 1.15,
+                                  "USD",
+                                  order.currency
+                                );
+
                             return (
                               <tr key={item.id}>
                                 <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
@@ -210,7 +228,7 @@ export const Orders = (): JSX.Element => {
                                 </td>
 
                                 <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
-                                  {priceFormatter(item.product.price)}
+                                  {priceFormatter(price)}
                                 </td>
 
                                 <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
@@ -218,10 +236,7 @@ export const Orders = (): JSX.Element => {
                                 </td>
 
                                 <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
-                                  $
-                                  {priceFormatter(
-                                    item.quantity * item.product.price * 1.15
-                                  )}
+                                  {priceFormatter(total)}
                                 </td>
                               </tr>
                             );
@@ -231,7 +246,24 @@ export const Orders = (): JSX.Element => {
                     </div>
 
                     <p className="mt-4 font-semibold text-right">
-                      Total order: ${priceFormatter(order.totalPrice)}
+                      Total order:
+                      {order.currency === "USD"
+                        ? `$${priceFormatter(order.totalPrice)}`
+                        : order.currency === "EUR"
+                        ? `${priceFormatter(
+                            currencyConverter(
+                              order.totalPrice,
+                              "USD",
+                              order.currency
+                            )
+                          )} €`
+                        : `${priceFormatter(
+                            currencyConverter(
+                              order.totalPrice,
+                              "USD",
+                              order.currency
+                            )
+                          )} L`}
                     </p>
 
                     {order.status === "ACTIVE" && (
