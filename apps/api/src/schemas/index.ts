@@ -42,11 +42,11 @@ export const orderIdSchema = z.object({
 export type FilterSchemaType = z.TypeOf<typeof filterSchema>;
 
 export const filterSchema = z.object({
-  itemName: z.string().optional(),
-  categoryName: z.string().optional(),
+  itemNames: z.array(z.string()).optional(),
+  categoryNames: z.array(z.string()).optional(),
 });
 
-export type searchSchemaType = z.TypeOf<typeof searchSchemaSchema>;
+export type searchSchemaType = z.TypeOf<typeof searchSchema>;
 
 export const searchSchema = z.object({
   itemName: z.string().optional(),
