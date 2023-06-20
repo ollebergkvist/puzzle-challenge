@@ -4,8 +4,8 @@ Puzzle home-challenge...
 
 ## Requirements
 
-- MongoDB Atlas alternatively a local mongodb instance with a replica set configured. If you use MongoDB atlas they will create a replica set
-  automatically.
+- MongoDB Atlas alternatively a local mongodb instance with a replica set configured. If you use MongoDB Atlas, a replica set
+  will be configured automatically for you.
 
 ## Information
 
