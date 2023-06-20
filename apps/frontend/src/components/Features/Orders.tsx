@@ -146,6 +146,10 @@ export const Orders = (): JSX.Element => {
                       </div>
 
                       <p className="font-semibold mt-4 text-sm sm:text-base sm:mt-0 order-1 sm:order-2">
+                        Currency: {order.currency}
+                      </p>
+
+                      <p className="font-semibold mt-4 text-sm sm:text-base sm:mt-0 order-1 sm:order-2">
                         Order Date: {formatDate(order.createdAt)}
                       </p>
                     </div>
@@ -161,6 +165,13 @@ export const Orders = (): JSX.Element => {
                               className="py-3.5  pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                             >
                               Product
+                            </th>
+
+                            <th
+                              scope="col"
+                              className="py-3.5  pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-0"
+                            >
+                              Quantity
                             </th>
 
                             <th
@@ -187,25 +198,33 @@ export const Orders = (): JSX.Element => {
                         </thead>
 
                         <tbody className="divide-y divide-gray-200 bg-white">
-                          {order.items.map((item) => (
-                            <tr key={item.id}>
-                              <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
-                                {item.product.title}
-                              </td>
+                          {order.items.map((item) => {
+                            console.log(item);
 
-                              <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
-                                {priceFormatter(item.product.price)}
-                              </td>
+                            return (
+                              <tr key={item.id}>
+                                <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
+                                  {item.product.title}
+                                </td>
 
-                              <td className="px-3 py-4 text-sm text-right  text-gray-500 sm:table-cell">
-                                {priceFormatter(item.product.price * 0.15)}
-                              </td>
+                                <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
+                                  {item.quantity}
+                                </td>
 
-                              <td className="px-3 py-4 text-sm  text-right  text-gray-500">
-                                ${priceFormatter(item.product.price * 1.15)}
-                              </td>
-                            </tr>
-                          ))}
+                                <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
+                                  {priceFormatter(item.product.price)}
+                                </td>
+
+                                <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
+                                  {priceFormatter(item.product.price * 0.15)}
+                                </td>
+
+                                <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
+                                  ${priceFormatter(item.product.price * 1.15)}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
