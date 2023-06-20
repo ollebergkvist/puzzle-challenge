@@ -1,9 +1,6 @@
 // libs
 import { PrismaClient } from "@prisma/client";
 
-// utils
-import { currencyConverter } from "../utils";
-
 // types
 import type { Request, Response } from "express";
 
@@ -235,6 +232,13 @@ export const updateOrder = async (req: Request, res: Response) => {
               quantity: parseInt(item.quantity),
             },
           });
+
+          const updatedItem = await prisma.orderItem.findUnique({
+            where: { id: existingOrderItem.id },
+          });
+
+          existingOrder.totalPrice +=
+            updatedItem.quantity * updatedItem.product.price;
         } else {
           console.error(`OrderItem with id ${item.orderItemId} not found.`);
         }
