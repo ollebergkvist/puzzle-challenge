@@ -13,19 +13,21 @@ export const useFilterClick = (
     try {
       setIsFiltering(true);
 
-      const selectedTitleNames = selectedTitles.join(",");
-      const selectedCategoryNames = selectedCategories.join(",");
+      const requestBody = {
+        itemNames: selectedTitles.map((title) => title),
+        categoryNames: selectedCategories.map((category) => category),
+      };
 
-      if (selectedTitleNames || selectedCategoryNames) {
-        const response = await fetch(
-          `${apiUrl}/products/filter?itemName=${selectedTitleNames}&categoryName=${selectedCategoryNames}`
-        );
-        const filteredProducts = await response.json();
+      const response = await fetch(`${apiUrl}/products/filter`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-        setFilteredProducts(filteredProducts);
-      } else {
-        setFilteredProducts([]);
-      }
+      const filteredProducts = await response.json();
+      setFilteredProducts(filteredProducts);
 
       setIsFiltering(false);
     } catch (error) {
