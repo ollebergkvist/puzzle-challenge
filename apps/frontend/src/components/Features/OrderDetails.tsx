@@ -89,7 +89,7 @@ export const OrderDetails = ({
         <LoadingSpinner />
       ) : (
         <div className="min-h-screen">
-          {order ? (
+          {order && !order.deleted ? (
             <div>
               <div className="flex flex-col space-y-12 mt-10">
                 <div className="border-b mb-4 py-4 px-4 rounded-lg shadow-sm bg-white">
@@ -293,6 +293,7 @@ export const OrderDetails = ({
                         onClick={(event) => {
                           event.preventDefault();
                           setActiveView("My Orders");
+
                           route("/", true);
                         }}
                         className="px-4 py-2 bg-blue-500 text-white rounded"
@@ -305,7 +306,13 @@ export const OrderDetails = ({
               </div>
             </div>
           ) : (
-            <p>Order does not exist</p>
+            <>
+              {(() => {
+                setActiveView("My Orders");
+
+                route("/", true);
+              })()}
+            </>
           )}
         </div>
       )}
