@@ -13,7 +13,8 @@ import { CartPage, HomePage, LoginPage, OrderDetailsPage } from "./pages";
 
 // components
 import { Navbar } from "./components";
-import { ProtectedRoute } from "./protected-route";
+import { ProtectedRoute } from "./components/UI/protected-route";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 export function App() {
   return (
@@ -34,6 +35,8 @@ export function App() {
                 path="/orders/:orderId"
                 component={OrderDetailsPage}
               />
+
+              <Route default={true} component={NotFoundPage} />
             </Router>
           </Layout>
         </ViewToggleProvider>
