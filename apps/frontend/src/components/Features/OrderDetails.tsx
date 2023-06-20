@@ -13,7 +13,12 @@ import {
 } from "../../hooks";
 
 // utils
-import { createDynamicUrl, formatDate, priceFormatter } from "../../utils";
+import {
+  createDynamicUrl,
+  currencyConverter,
+  formatDate,
+  priceFormatter,
+} from "../../utils";
 
 // components
 import { LoadingSpinner } from "..";
@@ -192,76 +197,108 @@ export const OrderDetails = ({
 
                         <tbody className="divide-y divide-gray-200 bg-white">
                           {order.items &&
-                            order.items.map((item) => (
-                              <tr key={item.id}>
-                                {item.product.title && (
-                                  <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
-                                    {item.product.title}
-                                  </td>
-                                )}
+                            order.items.map((item) => {
+                              const price =
+                                order.currency === "USD"
+                                  ? item.product.price
+                                  : currencyConverter(
+                                      item.product.price,
+                                      "USD",
+                                      order.currency
+                                    );
 
-                                {item.product.price && (
-                                  <>
-                                    {quantities && (
-                                      <td className="px-3 py-4 text-sm text-right flex justify-end text-gray-500">
-                                        <input
-                                          className="block w-auto rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                          type="number"
-                                          min="1"
-                                          value={quantities[item.id] || ""}
-                                          onChange={(event) => {
-                                            event.preventDefault();
-                                            updateQuantity(
-                                              item.id,
-                                              event.target.value
-                                            );
-                                          }}
+                              const total =
+                                order.currency === "USD"
+                                  ? item.quantity * item.product.price * 1.15
+                                  : currencyConverter(
+                                      item.quantity * item.product.price * 1.15,
+                                      "USD",
+                                      order.currency
+                                    );
+
+                              return (
+                                <tr key={item.id}>
+                                  {item.product.title && (
+                                    <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
+                                      {item.product.title}
+                                    </td>
+                                  )}
+
+                                  {item.product.price && (
+                                    <>
+                                      {quantities && (
+                                        <td className="px-3 py-4 text-sm text-right flex justify-end text-gray-500">
+                                          <input
+                                            className="block w-auto rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                            type="number"
+                                            min="1"
+                                            value={quantities[item.id] || ""}
+                                            onChange={(event) => {
+                                              event.preventDefault();
+                                              updateQuantity(
+                                                item.id,
+                                                event.target.value
+                                              );
+                                            }}
+                                          />
+                                        </td>
+                                      )}
+
+                                      <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
+                                        {priceFormatter(price)}
+                                      </td>
+
+                                      <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
+                                        {priceFormatter(
+                                          item.product.price * 0.15
+                                        )}
+                                      </td>
+
+                                      <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
+                                        {priceFormatter(total)}
+                                      </td>
+
+                                      <td className="px-3 py-4 text-sm flex justify-end text-gray-500">
+                                        <TrashIcon
+                                          className={`h-5 w-5 text-red-500 cursor-pointer ${
+                                            isDeleting ? "opacity-50" : ""
+                                          }`}
+                                          onClick={() =>
+                                            deleteOrderItem({
+                                              orderItemId: item.id,
+                                            })
+                                          }
                                         />
                                       </td>
-                                    )}
-
-                                    <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
-                                      {priceFormatter(
-                                        item.product.price * 0.15
-                                      )}
-                                    </td>
-
-                                    <td className="px-3 py-4 text-sm text-right text-gray-500 sm:table-cell">
-                                      {priceFormatter(
-                                        item.product.price * 0.15
-                                      )}
-                                    </td>
-
-                                    <td className="px-3 py-4 text-sm text-right text-gray-500">
-                                      $
-                                      {priceFormatter(
-                                        item.product.price * 0.15
-                                      )}
-                                    </td>
-
-                                    <td className="px-3 py-4 text-sm flex justify-end text-gray-500">
-                                      <TrashIcon
-                                        className={`h-5 w-5 text-red-500 cursor-pointer ${
-                                          isDeleting ? "opacity-50" : ""
-                                        }`}
-                                        onClick={() =>
-                                          deleteOrderItem({
-                                            orderItemId: item.id,
-                                          })
-                                        }
-                                      />
-                                    </td>
-                                  </>
-                                )}
-                              </tr>
-                            ))}
+                                    </>
+                                  )}
+                                </tr>
+                              );
+                            })}
                         </tbody>
                       </table>
                     </div>
 
                     {order.totalPrice && (
                       <p className="mt-4 font-semibold text-right">
-                        Total order: ${priceFormatter(order.totalPrice)}
+                        Total order:
+                        {order.currency === "USD"
+                          ? `$${priceFormatter(order.totalPrice)}`
+                          : order.currency === "EUR"
+                          ? `${priceFormatter(
+                              currencyConverter(
+                                order.totalPrice,
+                                "USD",
+                                order.currency
+                              )
+                            )} €`
+                          : `${priceFormatter(
+                              currencyConverter(
+                                order.totalPrice,
+                                "USD",
+                                order.currency
+                              )
+                            )} L`}
                       </p>
                     )}
 
