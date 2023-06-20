@@ -2,13 +2,14 @@
 import { Link } from "preact-router";
 
 // context
-import { useAuthContext } from "../../context";
+import { useAuthContext, useViewToggleContext } from "../../context";
 
 // types
 import type { JSX } from "preact/jsx-runtime";
 
 export const Navbar = (): JSX.Element => {
   const { isAuthenticated, logout } = useAuthContext();
+  const { setActiveView } = useViewToggleContext();
 
   return (
     <div>
@@ -19,7 +20,13 @@ export const Navbar = (): JSX.Element => {
 
             <ul className="flex-shrink-0 flex py-3 space-x-2 items-center">
               <li>
-                <Link href="/" className="text-white text-sm font-medium">
+                <Link
+                  onClick={() => {
+                    setActiveView("All Products");
+                  }}
+                  href="/"
+                  className="text-white text-sm font-medium"
+                >
                   Home
                 </Link>
               </li>
