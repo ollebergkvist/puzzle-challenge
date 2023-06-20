@@ -7,6 +7,9 @@ import type { JSX } from "preact/jsx-runtime";
 // context
 import { useAuthContext, useViewToggleContext } from "../context";
 
+// utils
+import { getProductsUrl } from "../utils";
+
 // hooks
 import {
   useFilterOptions,
@@ -24,14 +27,11 @@ import {
   Products,
   Search,
 } from "../components";
+import { useEffect, useMemo } from "preact/hooks";
 
 export const HomePage = (): JSX.Element => {
   const { isAuthenticated } = useAuthContext();
   const { activeView, setActiveView } = useViewToggleContext();
-
-  const { products, loading } = useFetchData();
-  const categories = useFilterOptions(products, "category");
-  const titles = useFilterOptions(products, "title");
 
   const {
     selectedValues: selectedTitles,
@@ -43,35 +43,28 @@ export const HomePage = (): JSX.Element => {
     handleFilterChange: handleCategoryFilterChange,
   } = useFilter();
 
-  const { filteredProducts, isFiltering } = useFilterClick(
-    selectedTitles,
-    selectedCategories,
-    import.meta.env.VITE_API_URL
-  );
-
   const {
     searchQuery,
     handleSearchQueryChange,
     searchedProducts,
     isSearching,
     searchError,
-  } = useDebouncedSearch(`${import.meta.env.VITE_API_URL}/products`);
+  } = useDebouncedSearch(getProductsUrl);
+
+  const { products, unfilteredProducts, loading } = useFetchData(
+    selectedTitles,
+    selectedCategories,
+    searchQuery
+  );
+
+  console.log("🚀 ~ file: HomePage.tsx:59 ~ HomePage ~ products,:", products);
+
+  const categories = useFilterOptions(unfilteredProducts, "category");
+  const titles = useFilterOptions(unfilteredProducts, "title");
 
   const handleAddItemToCart = (event) => {
     const { value } = event.target;
   };
-
-  const shouldShowFilteredProducts = filteredProducts.length > 0;
-
-  const shouldShowSearchedProducts =
-    searchedProducts.length > 0 && !loading && !isFiltering;
-
-  const shouldShowAllProducts =
-    products.length > 1 &&
-    !loading &&
-    searchedProducts.length === 0 &&
-    !isFiltering &&
-    !searchError;
 
   return (
     <div className="">
@@ -141,35 +134,24 @@ export const HomePage = (): JSX.Element => {
                 <LoadingSpinner />
               ) : (
                 <>
-                  {shouldShowFilteredProducts ? (
-                    <Products
-                      products={filteredProducts}
-                      handleOnClick={handleAddItemToCart}
-                    />
+                  {loading ? (
+                    <LoadingSpinner />
                   ) : (
-                    <div>
-                      {loading && !isFiltering ? (
-                        <LoadingSpinner />
+                    <>
+                      {searchedProducts.length > 0 ? (
+                        <Products
+                          products={searchedProducts}
+                          handleOnClick={handleAddItemToCart}
+                        />
                       ) : (
-                        <>
-                          {shouldShowSearchedProducts ? (
-                            <Products
-                              products={searchedProducts}
-                              handleOnClick={handleAddItemToCart}
-                            />
-                          ) : null}
-
-                          {shouldShowAllProducts ? (
-                            <Products
-                              products={products}
-                              handleOnClick={handleAddItemToCart}
-                            />
-                          ) : null}
-
-                          {searchError ? <p>{searchError}</p> : null}
-                        </>
+                        <Products
+                          products={products}
+                          handleOnClick={handleAddItemToCart}
+                        />
                       )}
-                    </div>
+
+                      {searchError ? <p>{searchError}</p> : null}
+                    </>
                   )}
                 </>
               )}
