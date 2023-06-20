@@ -199,8 +199,6 @@ export const Orders = (): JSX.Element => {
 
                         <tbody className="divide-y divide-gray-200 bg-white">
                           {order.items.map((item) => {
-                            console.log(item);
-
                             return (
                               <tr key={item.id}>
                                 <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
@@ -220,7 +218,10 @@ export const Orders = (): JSX.Element => {
                                 </td>
 
                                 <td className="px-3 py-4 text-sm text-right text-gray-500 lg:table-cell">
-                                  ${priceFormatter(item.product.price * 1.15)}
+                                  $
+                                  {priceFormatter(
+                                    item.quantity * item.product.price * 1.15
+                                  )}
                                 </td>
                               </tr>
                             );
