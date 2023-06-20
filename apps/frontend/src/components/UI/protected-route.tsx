@@ -1,7 +1,7 @@
 // libs
 import { route } from "preact-router";
 import { useEffect } from "preact/hooks";
-import { useAuthContext } from "./context";
+import { useAuthContext } from "../../context";
 import AsyncRoute from "preact-async-route";
 
 export const ProtectedRoute = ({ component: Component, path, ...rest }) => {
