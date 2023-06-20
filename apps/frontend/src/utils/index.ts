@@ -4,3 +4,4 @@ export * from "./constants";
 export * from "./format-date";
 export * from "./get-unique-values";
 export * from "./price-formatter";
+export * from "./convert-currency";
