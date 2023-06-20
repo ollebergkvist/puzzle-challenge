@@ -20,16 +20,19 @@ export const getAllProducts = async (req: Request, res: Response) => {
 
 export const getFilteredProducts = async (req: Request, res: Response) => {
   try {
-    const { itemName, categoryName } = req.query;
+    const { itemNames, categoryNames } = req.body;
+
+    const itemNamesString = itemNames ? itemNames.join("@") : "";
+    const categoryNamesString = categoryNames ? categoryNames.join("@") : "";
 
     let whereClause = {};
 
-    if (itemName) {
-      whereClause.title = { in: itemName.split(",") };
+    if (itemNamesString) {
+      whereClause.title = { in: itemNamesString.split("@") };
     }
 
-    if (categoryName) {
-      whereClause.category = { in: categoryName.split(",") };
+    if (categoryNamesString) {
+      whereClause.category = { in: categoryNamesString.split("@") };
     }
 
     const filteredProducts = await prisma.product.findMany({
