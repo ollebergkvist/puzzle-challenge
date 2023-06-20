@@ -35,12 +35,10 @@ export const useFetchData = (titles: any, categories: any) => {
       const data = await response.json();
 
       if (!titles.length && !categories.length) {
-        console.log("1");
         setUnfilteredProducts(data);
         setProducts(data);
         setLoading(false);
       } else {
-        console.log("2");
         setProducts(data);
         setLoading(false);
       }
