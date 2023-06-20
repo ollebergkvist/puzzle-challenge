@@ -4,7 +4,6 @@ export * from "./useDebouncedSearch";
 export * from "./useDynamicAPI";
 export * from "./useFetchData";
 export * from "./useFilter";
-export * from "./useFilterClick";
 export * from "./useFilteredProducts";
 export * from "./useFilterOptions";
 export * from "./useGetOrders";
