@@ -17,7 +17,7 @@ import {
 const router = express.Router();
 
 router.get("/", getAllProducts);
-router.get("/filter", validateBody(filterSchema), getFilteredProducts);
+router.post("/filter", validateBody(filterSchema), getFilteredProducts);
 router.get("/search", validateBody(searchSchema), searchProducts);
 
 export { router as ProductsRoutes };
