@@ -5,7 +5,10 @@ export const useSortByPrice = () => {
   const [sortByPriceOrder, setSortByPriceOrder] = useState(null);
 
   const handleSortByPrice = () => {
-    if (sortByPriceOrder === null || sortByPriceOrder === "asc") {
+    if (sortByPriceOrder === null) {
+      setSortByPriceOrder("asc");
+    }
+    if (sortByPriceOrder === "asc") {
       setSortByPriceOrder("desc");
     } else {
       setSortByPriceOrder("asc");
