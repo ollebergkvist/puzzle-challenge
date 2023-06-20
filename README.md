@@ -16,12 +16,14 @@ Puzzle home-challenge...
 - API will run on port 5001 by default, and the React app runs on port 5173 (unless configured differently).
 - A default user is seeded with the following credentials that you can use to login.
 
-IMPORTANT: If yarn dev fails the first time you run the repo after cloning the repo, just run yarn dev again and it should work.
-
 ```
  email: admin@example.com
  password: password
 ```
+
+## Important
+
+If yarn dev fails the first time you run the repo after cloning the repo, just run yarn dev again and it should work.
 
 ## Run this app locally
 
