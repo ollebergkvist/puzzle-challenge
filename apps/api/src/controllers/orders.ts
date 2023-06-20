@@ -219,6 +219,8 @@ export const updateOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
+    let totalPrice = 0;
+
     if (itemsToAdd && itemsToAdd.length > 0) {
       for (const item of itemsToAdd) {
         const existingOrderItem = await prisma.orderItem.findUnique({
@@ -235,10 +237,16 @@ export const updateOrder = async (req: Request, res: Response) => {
 
           const updatedItem = await prisma.orderItem.findUnique({
             where: { id: existingOrderItem.id },
+            include: { product: true },
           });
 
-          existingOrder.totalPrice +=
-            updatedItem.quantity * updatedItem.product.price;
+          if (updatedItem && updatedItem.product && updatedItem.product.price) {
+            totalPrice += updatedItem.quantity * updatedItem.product.price;
+          } else {
+            console.error(
+              `Price not found for OrderItem with id ${item.orderItemId}.`
+            );
+          }
         } else {
           console.error(`OrderItem with id ${item.orderItemId} not found.`);
         }
@@ -251,6 +259,15 @@ export const updateOrder = async (req: Request, res: Response) => {
         data: { currency },
       });
     }
+
+    const totalWithInterest = totalPrice * 1.15;
+
+    existingOrder.totalPrice = totalWithInterest;
+
+    await prisma.order.update({
+      where: { id: existingOrder.id },
+      data: { totalPrice: totalWithInterest },
+    });
 
     const updatedOrder = await prisma.order.findUnique({
       where: { id: existingOrder.id },
